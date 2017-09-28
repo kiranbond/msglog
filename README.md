@@ -3,6 +3,12 @@ MsgLog implements a persistent/durable log for message streams. Streams are prod
 and consumed in FIFO order. It is Kafka-esque in terms of usage model but only
 on a single node when replication is not needed.
 
+msglog is implemented using a two level abstraction. msglog itself is an interface
+with the backend persistence implemented using a store (message store). The
+library contains an implementation with a filesystem backend MessageStoreFS.
+It is possible to use other backends like Cassandra or etcd for lower volume data
+to implement a replicated message log.
+
 Messages are streamed to persistent backend as they are written after assigning
 a Message Sequence Number (MSN). The MSN is returned to the user and response
 is sent on the supplied channel when the message is stored on disk.
@@ -13,11 +19,7 @@ consumers can discover the MSNs available for reading. When the consumer(s)
 no longer needs a message corresponding to an MSN, it can Commit with an MSN
 that will let the MsgLog clean up the log in the background.
 
-msglog is implemented using a two level abstraction. msglog itself is an interface
-with the backend persistence implemented using a mstore (message store). The
-library contains an implementation with a filesystem backend MessageStoreFS.
-It is possible to use other backends like Cassandra or etcd for lower volume data
-to implement a replicated message log.
+
 
 MessageStoreFS implements the streaming message filestore. It is meant for
 storing mostly fifo ordered writes and reads.
